@@ -3,7 +3,7 @@ module.exports = {
   entry: path.resolve(__dirname, './client/Index.jsx'), // change me (points towards your index.jsx)
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, './public/'), // change me (points towards folder containing bundle.js)
+    path: path.resolve(__dirname, './public'), // change me (points towards folder containing bundle.js)
   },
   mode: 'development',
   devtool: 'inline-source-map',
@@ -21,6 +21,10 @@ module.exports = {
             ]
           }
         },
+      },
+      {
+        test: /\.(css|less)$/,
+        use: ["style-loader", "css-loader"]
       }
     ],
   }
