@@ -1,12 +1,86 @@
 import React from 'react';
 import '../../style.css';
 import WeekRow from './WeekRow.jsx'
+import Modal from 'react-modal';
+import helpers from './Helpers';
+
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      modalIsOpen: false,
+      twelveHrStart: '',
+      twelveHrEnd: '',
+      reservationBlock: {
+        start: '',
+        end: '',
+      }
+    }
+    this.openModal = this.openModal.bind(this);
+    this.afterOpenModal = this.afterOpenModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.setStartEnd = this.setStartEnd.bind(this);
+    this.enterStart = this.enterStart.bind(this)
+    this.enterEnd = this.enterEnd.bind(this)
   }
+
+  openModal() {
+    this.setState({modalIsOpen: true});
+  }
+ 
+  afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    this.subtitle.style.color = '#f00';
+  }
+ 
+  closeModal() {
+    this.setState({modalIsOpen: false});
+  }
+
+  setStartEnd(e) {
+    this.setState({
+      twelveHrStart: helpers.convertTo12Hr(e.target.id[0] + e.target.id[1] + '00'),
+      twelveHrEnd: helpers.convertTo12Hr(e.target.id[0] + (Number(e.target.id[1])+1).toString() + '00'),
+      reservationBlock: {
+        start: e.target.id[0] + e.target.id[1] + '00',
+        end:  e.target.id[0] + (Number(e.target.id[1])+1).toString() + '00'
+      }
+    })
+    this.openModal();
+  }
+
+  enterStart(e) {
+    // console.log('id', e.target.id, 'val', e.target.value)
+    this.setState({
+      twelveHrStart: e.target.value,
+      reservationBlock: {
+        start: e.target.value,
+        end: this.state.reservationBlock.end,
+      }
+    })
+  }
+
+  enterEnd(e) {
+    this.setState({
+      twelveHrEnd: e.target.value,
+      reservationBlock: {
+        end: e.target.value,
+        start: this.state.reservationBlock.start,
+      }
+    })
+  }
+
   render() {
     return (
       <div>
@@ -32,10 +106,43 @@ class App extends React.Component {
           </div>
           <div className='week-row-container'>
             {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day)=>{
-              return <WeekRow day={day}/>
+              return <WeekRow day={day} setStartEnd={this.setStartEnd}/>
             })}
           </div>
         </div>
+        <div>
+        <button onClick={this.openModal}>Open Modal</button>
+        <Modal
+          isOpen={this.state.modalIsOpen}
+          onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          style={customStyles}
+          contentLabel="Example Modal"
+          ariaHideApp={false}
+        >
+ 
+          <h2 ref={subtitle => this.subtitle = subtitle}></h2>
+          <form style={{display:'flex', flexFlow:'column wrap'}}>
+            <div>Start:</div>
+            {/* <input id='start' value={this.state.reservationBlock.start} onChange={this.enterStart}/> */}
+            <select id='start' value={this.state.twelveHrStart} onChange={this.enterStart}>
+              {helpers.createDropdownTimes().map((ddTime) => {
+                return <option>{ddTime}</option>
+              } )}
+            </select>
+            <br></br>
+            <div>End:</div>
+            {/* <input id='end' value={this.state.reservationBlock.end} onChange={this.enterEnd}/> */}
+            <select id='end' value={this.state.twelveHrEnd} onChange={this.enterEnd}>
+              {helpers.createDropdownTimes().map((ddTime) => {
+                return <option >{ddTime}</option>
+              } )}
+            </select>
+            <br></br>
+            <button onClick={this.closeModal}>close</button>
+          </form>
+        </Modal>
+      </div>
       </div>
     )
   }

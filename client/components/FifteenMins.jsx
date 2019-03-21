@@ -4,15 +4,22 @@ class FifteenMins extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isBlock: false
+      isBlock: this.props.isBlock
     };
     this.alterBlock = this.alterBlock.bind(this);
   }
 
-  alterBlock() {
+  componentWillReceiveProps(newProps) {
     this.setState({
-      isBlock: !this.state.isBlock
+      isBlock: newProps.isBlock,
     })
+  }
+
+  alterBlock(e) {
+    this.setState({
+      isBlock: true/*!this.state.isBlock*/
+    })
+    this.props.createBlock(e)
   }
   
   render() {
