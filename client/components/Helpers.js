@@ -19,17 +19,40 @@ var helpers = {
   convertTo12Hr: function convertTo12Hr(militaryTime) {
     console.log('milTime:',militaryTime)
     if(Number(militaryTime) < 100) {
-      return '12:' + Number(militaryTime) + ' am'
+      return '12:0' + Number(militaryTime) + ' am'
     }
-    if(Number(militaryTime) < 1200) {
+    if(Number(militaryTime) < 1000) {
       return[militaryTime.slice(1, 2), ':', militaryTime.slice(2)].join('') + ' am';
-    } else {
+    } 
+    if(Number(militaryTime) < 1200) {
+      return[militaryTime.slice(0, 2), ':', militaryTime.slice(2)].join('') + ' am';
+    }
+    else {
       if(Number(militaryTime) < 1300) {
-        return '12:' + (Number(militaryTime) - 1200) + ' pm'
+        return '12:0' + (Number(militaryTime) - 1200) + ' pm'
       }
       var convert = '0' + (Number(militaryTime) - 1200).toString();
-      return[convert.slice(0, 2), ':', convert.slice(2)].join('') + ' pm';
+      console.log(convert)
+      if(Number(convert) < 1000) {
+        return[convert.slice(1, 2), ':', convert.slice(2)].join('') + ' pm';
+      }
+      return[convert.slice(1, 3), ':', convert.slice(3)].join('') + ' pm';
     }
+  },
+
+  convertToMil: function convertToMil(twelveHr) {
+    // am conversion
+    if(twelveHr[1] === ':' && twelveHr[twelveHr.length - 2] === 'a') {
+      return '0' + twelveHr[0] + twelveHr[2] + twelveHr[3]
+    } 
+    if(twelveHr[twelveHr.length - 2] === 'a') {
+      return twelveHr[0] + twelveHr[1] + twelveHr[3] + twelveHr[4]
+    }
+    // pm conversion
+    if(twelveHr[1] === '2') {
+      return '12' + twelveHr[3] + twelveHr[4];
+    }
+    return (Number(twelveHr.split(":")[0]) + 12).toString() + twelveHr.split(":")[1][0] + twelveHr.split(":")[1][1]
   }
 
 }

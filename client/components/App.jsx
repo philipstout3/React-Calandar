@@ -51,10 +51,16 @@ class App extends React.Component {
   setStartEnd(e) {
     this.setState({
       twelveHrStart: helpers.convertTo12Hr(e.target.id[0] + e.target.id[1] + '00'),
-      twelveHrEnd: helpers.convertTo12Hr(e.target.id[0] + (Number(e.target.id[1])+1).toString() + '00'),
+      twelveHrEnd: helpers.convertTo12Hr(
+        (Number(e.target.id[0] + e.target.id[1]) + 1) < 10 ? 
+          '0' + (Number(e.target.id[0] + e.target.id[1]) + 1).toString() + '00' : 
+          (Number(e.target.id[0] + e.target.id[1]) + 1).toString() + '00'
+      ),
       reservationBlock: {
         start: e.target.id[0] + e.target.id[1] + '00',
-        end:  e.target.id[0] + (Number(e.target.id[1])+1).toString() + '00'
+        end: (Number(e.target.id[0] + e.target.id[1]) + 1) < 10 ? 
+          '0' + (Number(e.target.id[0] + e.target.id[1]) + 1).toString() + '00' : 
+          (Number(e.target.id[0] + e.target.id[1]) + 1).toString() + '00',
       }
     })
     this.openModal();
@@ -65,7 +71,7 @@ class App extends React.Component {
     this.setState({
       twelveHrStart: e.target.value,
       reservationBlock: {
-        start: e.target.value,
+        start: helpers.convertToMil(e.target.value),
         end: this.state.reservationBlock.end,
       }
     })
@@ -75,7 +81,7 @@ class App extends React.Component {
     this.setState({
       twelveHrEnd: e.target.value,
       reservationBlock: {
-        end: e.target.value,
+        end: helpers.convertToMil(e.target.value),
         start: this.state.reservationBlock.start,
       }
     })
@@ -100,7 +106,7 @@ class App extends React.Component {
           <div className='times-container'>
             {['1 am', '2 am', '3 am', '4 am', '5 am', '6 am', '7 am', '8 am', 
             '9 am', '10 am', '11 am', '12 pm', '1 pm', '2 pm', '3 pm', '4 pm', 
-            '5 pm', '6 pm', '7 pm', '8 pm', '9 pm', '10 pm', '11 pm', '12 pm'].map((time) => {
+            '5 pm', '6 pm', '7 pm', '8 pm', '9 pm', '10 pm', '11 pm', '12 am'].map((time) => {
               return <div className='time-text'>{time}</div>
             })}
           </div>
@@ -111,7 +117,7 @@ class App extends React.Component {
           </div>
         </div>
         <div>
-        <button onClick={this.openModal}>Open Modal</button>
+
         <Modal
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
@@ -124,7 +130,6 @@ class App extends React.Component {
           <h2 ref={subtitle => this.subtitle = subtitle}></h2>
           <form style={{display:'flex', flexFlow:'column wrap'}}>
             <div>Start:</div>
-            {/* <input id='start' value={this.state.reservationBlock.start} onChange={this.enterStart}/> */}
             <select id='start' value={this.state.twelveHrStart} onChange={this.enterStart}>
               {helpers.createDropdownTimes().map((ddTime) => {
                 return <option>{ddTime}</option>
@@ -132,7 +137,6 @@ class App extends React.Component {
             </select>
             <br></br>
             <div>End:</div>
-            {/* <input id='end' value={this.state.reservationBlock.end} onChange={this.enterEnd}/> */}
             <select id='end' value={this.state.twelveHrEnd} onChange={this.enterEnd}>
               {helpers.createDropdownTimes().map((ddTime) => {
                 return <option >{ddTime}</option>
