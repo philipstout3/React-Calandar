@@ -22,6 +22,7 @@ class App extends React.Component {
       modalIsOpen: false,
       twelveHrStart: '',
       twelveHrEnd: '',
+      reservationBlocks: [],
       reservationBlock: {
         start: '',
         end: '',
@@ -31,8 +32,9 @@ class App extends React.Component {
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.setStartEnd = this.setStartEnd.bind(this);
-    this.enterStart = this.enterStart.bind(this)
-    this.enterEnd = this.enterEnd.bind(this)
+    this.enterStart = this.enterStart.bind(this);
+    this.enterEnd = this.enterEnd.bind(this);
+    this.saveBlock = this.saveBlock.bind(this);
   }
 
   openModal() {
@@ -57,6 +59,7 @@ class App extends React.Component {
           (Number(e.target.id[0] + e.target.id[1]) + 1).toString() + '00'
       ),
       reservationBlock: {
+        day: e.target.parentElement.id,
         start: e.target.id[0] + e.target.id[1] + '00',
         end: (Number(e.target.id[0] + e.target.id[1]) + 1) < 10 ? 
           '0' + (Number(e.target.id[0] + e.target.id[1]) + 1).toString() + '00' : 
@@ -67,12 +70,12 @@ class App extends React.Component {
   }
 
   enterStart(e) {
-    // console.log('id', e.target.id, 'val', e.target.value)
     this.setState({
       twelveHrStart: e.target.value,
       reservationBlock: {
         start: helpers.convertToMil(e.target.value),
         end: this.state.reservationBlock.end,
+        day: this.state.reservationBlock.day,
       }
     })
   }
@@ -83,8 +86,16 @@ class App extends React.Component {
       reservationBlock: {
         end: helpers.convertToMil(e.target.value),
         start: this.state.reservationBlock.start,
+        day: this.state.reservationBlock.day,
       }
     })
+  }
+
+  saveBlock() {
+    this.setState({
+      reservationBlocks: this.state.reservationBlocks.concat(this.state.reservationBlock)
+    })
+    this.closeModal()
   }
 
   render() {
@@ -112,7 +123,7 @@ class App extends React.Component {
           </div>
           <div className='week-row-container'>
             {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day)=>{
-              return <WeekRow day={day} setStartEnd={this.setStartEnd}/>
+              return <WeekRow day={day} setStartEnd={this.setStartEnd} reservationBlocks={this.state.reservationBlocks}/>
             })}
           </div>
         </div>
@@ -144,6 +155,7 @@ class App extends React.Component {
             </select>
             <br></br>
             <button onClick={this.closeModal}>close</button>
+            <button onClick={this.saveBlock}>save</button>
           </form>
         </Modal>
       </div>

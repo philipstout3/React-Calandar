@@ -17,7 +17,6 @@ var helpers = {
   },
 
   convertTo12Hr: function convertTo12Hr(militaryTime) {
-    console.log('milTime:',militaryTime)
     if(Number(militaryTime) < 100) {
       return '12:0' + Number(militaryTime) + ' am'
     }
@@ -53,7 +52,16 @@ var helpers = {
       return '12' + twelveHr[3] + twelveHr[4];
     }
     return (Number(twelveHr.split(":")[0]) + 12).toString() + twelveHr.split(":")[1][0] + twelveHr.split(":")[1][1]
-  }
+  },
+
+  isReservedBlock: function isReservedBlock(time, arr, day) {
+    for(var i = 0; i < arr.length; i++) {
+      if(Number(arr[i].start) <= Number(time) && Number(arr[i].end) >  Number(time) && day === arr[i].day) {
+        return true;
+      }
+    }
+    return false;
+  },
 
 }
 

@@ -24,7 +24,7 @@ class FifteenMins extends React.Component {
   
   render() {
     return (
-      <div id={this.props.id} className='fifteen-min-block' onClick={this.alterBlock} style={this.state.isBlock ? {backgroundColor:'blue'} : {}}></div>
+      <div id={this.props.id} className='fifteen-min-block' onClick={this.alterBlock} style={this.state.isBlock ? {backgroundColor:'#a2c0f2'} : {}}>{this.state.isBlock && this.props.reservationBlocks.map(start => start.start).indexOf(this.props.id) !== -1 ? 'Reserved' : ''}</div>
     )
   }
 }

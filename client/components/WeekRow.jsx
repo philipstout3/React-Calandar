@@ -1,25 +1,19 @@
 import React from 'react';
 import FifteenMins from './FifteenMins.jsx';
 import Modal, {closeStyle} from 'simple-react-modal'
+import helpers from './Helpers'
 
 class WeekRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      day: '',
       timeBlocks: [],
       timeslotDivs: [],
       hourBlock: ['', '']
     };
     this.set96 = this.set96.bind(this);
     this.createBlock = this.createBlock.bind(this);
-  }
-
-  show(){
-    this.setState({show: true})
-  }
- 
-  close(){
-    this.setState({show: false})
   }
   
   componentDidMount() {
@@ -48,16 +42,18 @@ class WeekRow extends React.Component {
   }
 
   createBlock(e) {
+    //console.log(e.target.parentElement.id)
     this.setState({
-      hourBlock: this.state.hourBlock.concat(e.target.id[0] + e.target.id[1])
+      hourBlock: this.state.hourBlock.concat(e.target.id[0] + e.target.id[1]),
+      day: e.target.parentElement.id,
     })
   }
 
   render() {
     return(
-      <div className='week-row' onClick={this.props.setStartEnd}>
+      <div className='week-row' id={this.props.day} onClick={this.props.setStartEnd}>
       {this.state.timeslotDivs.map((block) => {
-        return <FifteenMins id={block} createBlock={this.createBlock} isBlock={this.state.hourBlock.indexOf(block[0] + block[1]) !== -1}/>
+        return <FifteenMins id={block} createBlock={this.createBlock} reservationBlocks={this.props.reservationBlocks} isBlock={helpers.isReservedBlock(block, this.props.reservationBlocks, this.state.day)/*this.state.hourBlock.indexOf(block[0] + block[1]) !== -1*/}/>
       })}
       </div>
     )
