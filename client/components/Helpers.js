@@ -31,7 +31,6 @@ var helpers = {
         return '12:0' + (Number(militaryTime) - 1200) + ' pm'
       }
       var convert = '0' + (Number(militaryTime) - 1200).toString();
-      console.log(convert)
       if(Number(convert) < 1000) {
         return[convert.slice(1, 2), ':', convert.slice(2)].join('') + ' pm';
       }
@@ -61,6 +60,89 @@ var helpers = {
       }
     }
     return false;
+  },
+
+  styleStartEnd: function styleStartEnd(id, isBlock, reservationBlock, day) {
+    if(!isBlock) {return}
+    if(reservationBlock.map(res => res.start).indexOf(id) !== -1 ) {
+      var index = reservationBlock.map(res => res.start).indexOf(id);
+      if(reservationBlock[index].day === day) {
+        return 'Start: ' + helpers.convertTo12Hr(reservationBlock[index].start); //+ helpers.convertTo12Hr(reservationBlock[index].end);    
+      }
+    }
+  },
+
+  getAllBetween: function getAllBetween(time, day, reservationBlocks) {
+    var ans = '';
+    reservationBlocks.map((block) => {
+      if(time >= Number(block.start) && Number(time) < Number(block.end) && day === block.day) {
+        ans = block
+      }
+    });
+    if(ans === '') {
+      return
+    }
+    // Now that we've found the obj...
+    var arr = [ans.start];
+    function inner(time) {
+      var newTime = helpers.increment15(time)
+      if(newTime === ans.end) {
+        arr.push(newTime)
+        return
+      }
+      arr.push(newTime)
+      inner(newTime)
+    }
+    inner(ans.start)
+    return arr
+  },
+
+  increment15: function increment15(str) {
+    var toNum = Number(str) + 15;
+    if(toNum.toString().slice(-2) === '60'){
+      toNum = (Number(str.slice(0,2)) + 1).toString() + '00'
+    }
+    if(toNum.toString().length <= 2) {
+      toNum = '00' + toNum
+    }
+    if(toNum.toString().length <= 3) {
+      toNum = '0' + toNum
+    }
+    return toNum.toString()
+  },
+
+  getBetweenStartEnd: function getBetweenStartEnd(start, end) {
+    // expects string mil time input like "1245"
+    if(start === end) {
+      return [start]
+    }
+    var arr = [start];
+    function inner(time) {
+      var newTime = helpers.increment15(time)
+      if (newTime === end) {
+        arr.push(newTime)
+        return
+      }
+      arr.push(newTime)
+      inner(newTime)
+    }
+    inner(start)
+    return arr
+  },
+
+  numToString: function numToString(num) {
+    var ans = '';
+    var toStr = num.toString();
+    if(toStr.length === 2) {
+      ans = "00" + toStr
+    }
+    if(toStr.length === 3) {
+      ans = "0" + toStr
+    }
+    if(toStr.length === 4) {
+      return toStr
+    }
+    return ans;
   },
 
 }

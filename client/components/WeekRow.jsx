@@ -1,7 +1,8 @@
 import React from 'react';
 import FifteenMins from './FifteenMins.jsx';
-import Modal, {closeStyle} from 'simple-react-modal'
-import helpers from './Helpers'
+import Modal, {closeStyle} from 'simple-react-modal';
+import helpers from './Helpers';
+import _ from 'underscore';
 
 class WeekRow extends React.Component {
   constructor(props) {
@@ -10,14 +11,29 @@ class WeekRow extends React.Component {
       day: '',
       timeBlocks: [],
       timeslotDivs: [],
-      hourBlock: ['', '']
+      hourBlock: ['', ''],
+      draggedItems: [],
+      allDragged: [],
+      reservationBlocks: this.props.reservationBlocks,
     };
     this.set96 = this.set96.bind(this);
     this.createBlock = this.createBlock.bind(this);
+    this.dragEvent = this.dragEvent.bind(this);
+    this.startDrag = this.startDrag.bind(this);
+    this.endDrag = this.endDrag.bind(this);
   }
   
   componentDidMount() {
     this.set96();
+  }
+  
+  componentWillReceiveProps(newProps) {
+    if(newProps.clearValues) {
+      this.setState({
+        allDragged: [],
+        draggedItems: []
+      })
+    }
   }
 
   set96(){
@@ -49,11 +65,43 @@ class WeekRow extends React.Component {
     })
   }
 
+  startDrag(e) {
+    this.setState({
+      day: e.target.id.split('-')[1],
+      startDragDay: e.target.id.split('-')[1],
+      draggedItems: this.state.draggedItems.concat(e.target.id)
+    })
+  }
+
+  dragEvent(e) {
+    if(e.target.id.split('-')[1] === this.state.startDragDay && this.state.draggedItems.indexOf(e.target.id) === -1) {
+      this.setState({
+        draggedItems: this.state.draggedItems.concat(e.target.id)
+      })
+      var max = helpers.numToString(Math.max(...this.state.draggedItems.map(drag => drag.split('-')[0])));
+      var min = helpers.numToString(Math.min(...this.state.draggedItems.map(drag => drag.split('-')[0])));
+      var getMissed = helpers.getBetweenStartEnd(min, max);
+      var missedItems = getMissed.map(missed => missed + "-" + this.state.startDragDay)
+      var union = _.union(this.state.draggedItems, missedItems)
+      this.setState({
+        allDragged: union
+      })
+    }
+  }
+
+  endDrag(e) {
+    this.props.setEndDrag(this.state.allDragged)
+    this.props.openModal()
+    this.setState({
+      draggedItems: [],
+    })
+  }
+
   render() {
     return(
-      <div className='week-row' id={this.props.day} onClick={this.props.setStartEnd}>
+      <div className='week-row' id={this.props.day} onDragStart={this.props.setStartDrag} onDragEnd={this.setEndDrag} onClick={this.props.setStartEnd}>
       {this.state.timeslotDivs.map((block) => {
-        return <FifteenMins id={block} createBlock={this.createBlock} reservationBlocks={this.props.reservationBlocks} isBlock={helpers.isReservedBlock(block, this.props.reservationBlocks, this.state.day)/*this.state.hourBlock.indexOf(block[0] + block[1]) !== -1*/}/>
+        return <FifteenMins draggable={true} startDrag={this.startDrag} endDrag={this.endDrag} dragEvent={this.dragEvent} id={block} createBlock={this.createBlock} day={this.props.day} reservationBlocks={this.props.reservationBlocks} isBlock={helpers.isReservedBlock(block, this.props.reservationBlocks, this.state.day) || this.state.allDragged.map(drag => drag.split('-')[0]).indexOf(block) !== -1}/>
       })}
       </div>
     )

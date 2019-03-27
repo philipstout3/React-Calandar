@@ -22,6 +22,7 @@ class App extends React.Component {
       modalIsOpen: false,
       twelveHrStart: '',
       twelveHrEnd: '',
+      clearValues: false,
       reservationBlocks: [],
       reservationBlock: {
         start: '',
@@ -35,6 +36,8 @@ class App extends React.Component {
     this.enterStart = this.enterStart.bind(this);
     this.enterEnd = this.enterEnd.bind(this);
     this.saveBlock = this.saveBlock.bind(this);
+    this.setStartDrag = this.setStartDrag.bind(this);
+    this.setEndDrag = this.setEndDrag.bind(this);
   }
 
   openModal() {
@@ -47,11 +50,15 @@ class App extends React.Component {
   }
  
   closeModal() {
-    this.setState({modalIsOpen: false});
+    this.setState({
+      modalIsOpen: false,
+      clearValues: true,
+    });
   }
 
   setStartEnd(e) {
     this.setState({
+      clearValues: false,
       twelveHrStart: helpers.convertTo12Hr(e.target.id[0] + e.target.id[1] + '00'),
       twelveHrEnd: helpers.convertTo12Hr(
         (Number(e.target.id[0] + e.target.id[1]) + 1) < 10 ? 
@@ -67,6 +74,43 @@ class App extends React.Component {
       }
     })
     this.openModal();
+  }
+
+  setStartDrag(e) {
+    //console.log(e.target.id.split('-')[0])
+    this.setState({
+      clearValues: false,
+      twelveHrStart: helpers.convertTo12Hr(e.target.id.split('-')[0]),
+      reservationBlock: {
+        day: e.target.parentElement.id,
+        start: e.target.id.split('-')[0],
+      }
+    })
+  }
+
+  setEndDrag(draggedItems) {
+    var day = draggedItems[0].split('-')[1];
+    var items = draggedItems.map(item => Number(item.split('-')[0]))
+    var largest = Math.max(...items);
+    var endTime = '';
+    if(largest.toString().length == 2) {
+      endTime = '00' + largest.toString();
+    }
+    if(largest.toString().length == 3) {
+      endTime = '0' + largest.toString()
+    }
+    if(largest.toString().length == 4) {
+      endTime = largest.toString()
+    }
+    //console.log(helpers.convertTo12Hr(helpers.increment15(endTime)))
+    this.setState({
+      twelveHrEnd: helpers.convertTo12Hr(helpers.increment15(endTime)),
+      reservationBlock: {
+        day: day,
+        start: this.state.reservationBlock.start,
+        end: helpers.increment15(endTime)
+      }
+    })
   }
 
   enterStart(e) {
@@ -123,7 +167,16 @@ class App extends React.Component {
           </div>
           <div className='week-row-container'>
             {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day)=>{
-              return <WeekRow day={day} setStartEnd={this.setStartEnd} reservationBlocks={this.state.reservationBlocks}/>
+              return <WeekRow 
+                day={day} 
+                openModal={this.openModal} 
+                setEndDrag={this.setEndDrag} 
+                setStartDrag={this.setStartDrag} 
+                setStartEnd={this.setStartEnd} 
+                reservationBlocks={this.state.reservationBlocks} 
+                reservationBlock={this.state.reservationBlock}
+                clearValues={this.state.clearValues}
+              />
             })}
           </div>
         </div>
