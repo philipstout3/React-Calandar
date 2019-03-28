@@ -11,7 +11,8 @@ const customStyles = {
     right                 : 'auto',
     bottom                : 'auto',
     marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)'
+    transform             : 'translate(-50%, -50%)',
+    width                 : '300px'
   }
 };
 
@@ -46,7 +47,7 @@ class App extends React.Component {
  
   afterOpenModal() {
     // references are now sync'd and can be accessed.
-    this.subtitle.style.color = '#f00';
+    // this.subtitle.style.color = '#f00';
   }
  
   closeModal() {
@@ -190,26 +191,30 @@ class App extends React.Component {
           contentLabel="Example Modal"
           ariaHideApp={false}
         >
- 
-          <h2 ref={subtitle => this.subtitle = subtitle}></h2>
+
+          {/* <h2 ref={subtitle => this.subtitle = subtitle}></h2> */}
+          <h2 className="modal-header">Reserve an Event</h2>
           <form style={{display:'flex', flexFlow:'column wrap'}}>
-            <div>Start:</div>
-            <select id='start' value={this.state.twelveHrStart} onChange={this.enterStart}>
+            <div className="modal-label">Start Time</div>
+            <select className="modal-select" id='start' value={this.state.twelveHrStart} onChange={this.enterStart}>
               {helpers.createDropdownTimes().map((ddTime) => {
                 return <option>{ddTime}</option>
               } )}
             </select>
             <br></br>
-            <div>End:</div>
-            <select id='end' value={this.state.twelveHrEnd} onChange={this.enterEnd}>
+            <div className="modal-label">End Time</div>
+            <select className="modal-select" id='end' value={this.state.twelveHrEnd} onChange={this.enterEnd}>
               {helpers.createDropdownTimes().map((ddTime) => {
                 return <option >{ddTime}</option>
               } )}
             </select>
             <br></br>
-            <button onClick={this.closeModal}>close</button>
-            <button onClick={this.saveBlock}>save</button>
-          </form>
+            </form>
+            <hr></hr>
+            <div className="modal-btns">
+              <button className="btn btn-secondary" onClick={this.closeModal}>close</button>
+              <button className="btn btn-primary" onClick={this.saveBlock}>save</button>
+            </div>
         </Modal>
       </div>
       </div>
