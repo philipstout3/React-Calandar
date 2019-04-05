@@ -67,7 +67,13 @@ var helpers = {
     if(reservationBlock.map(res => res.start).indexOf(id) !== -1 ) {
       var index = reservationBlock.map(res => res.start).indexOf(id);
       if(reservationBlock[index].day === day) {
-        return 'Start: ' + helpers.convertTo12Hr(reservationBlock[index].start); //+ helpers.convertTo12Hr(reservationBlock[index].end);    
+        return 'Start: ' + helpers.convertTo12Hr(reservationBlock[index].start);
+      }
+    }
+    if(reservationBlock.map(res => res.end).indexOf(helpers.increment15(id)) !== -1) {
+      var indexEnd = reservationBlock.map(res => res.end).indexOf(helpers.increment15(id));
+      if(reservationBlock[indexEnd].day === day) {
+        return 'End: ' + helpers.convertTo12Hr(reservationBlock[indexEnd].end); 
       }
     }
   },

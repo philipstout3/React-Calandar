@@ -67,6 +67,7 @@ class WeekRow extends React.Component {
 
   startDrag(e) {
     this.setState({
+      pageY: e.pageY,
       day: e.target.id.split('-')[1],
       startDragDay: e.target.id.split('-')[1],
       draggedItems: this.state.draggedItems.concat(e.target.id)
@@ -74,8 +75,20 @@ class WeekRow extends React.Component {
   }
 
   dragEvent(e) {
+    //console.log(e.pageY >= this.state.pageY ? "moving down" : "moving up")
+    if(e.target.id.split('-')[1] === this.state.startDragDay && this.state.allDragged.indexOf(e.target.id) !== -1 && /*moving up*/ !(e.pageY >= this.state.pageY)) {
+      var index = this.state.allDragged.indexOf(e.target.id);
+      console.log(this.state.draggedItems.indexOf(e.target.id))
+      this.setState({
+        pageY: e.pageY,
+        allDragged: this.state.allDragged.slice(0,index), //.concat(this.state.allDragged.slice(index+1, this.state.allDragged.length))
+        draggedItems: this.state.allDragged.slice(0,index)
+      })
+    }
+
     if(e.target.id.split('-')[1] === this.state.startDragDay && this.state.draggedItems.indexOf(e.target.id) === -1) {
       this.setState({
+        pageY: e.pageY,
         draggedItems: this.state.draggedItems.concat(e.target.id)
       })
       var max = helpers.numToString(Math.max(...this.state.draggedItems.map(drag => drag.split('-')[0])));
@@ -84,7 +97,7 @@ class WeekRow extends React.Component {
       var missedItems = getMissed.map(missed => missed + "-" + this.state.startDragDay)
       var union = _.union(this.state.draggedItems, missedItems)
       this.setState({
-        allDragged: union
+        allDragged: missedItems//union
       })
     }
   }

@@ -147,7 +147,7 @@ class App extends React.Component {
     return (
       <div>
         <div className="header-box">
-          <div className="title">Enter Available Times</div>
+          <div className="title">Select Available Times</div>
         </div>
         <div className='header-box'>
           <div className='calendar-day'><span className="week-day">Sunday</span></div>

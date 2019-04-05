@@ -42,7 +42,7 @@ class FifteenMins extends React.Component {
 
     // if(helpers.isReservedBlock(id, reservationBlocks, this.props.day)) {console.log(document.getElementById(this.props.id + '-' + this.props.day))}
     return (
-      <div id={id + '-' + this.props.day} draggable={true} onDragStart={this.props.startDrag} onDragEnd={this.props.endDrag} onDragOver={this.props.dragEvent} className='fifteen-min-block' onClick={this.alterBlock} style={this.state.isBlock || this.state.draggedOver ? {backgroundColor:'#a2c0f2'} : {}}>
+      <div id={id + '-' + this.props.day} draggable={true} onDragStart={this.props.startDrag} onDragEnd={this.props.endDrag} onDragOver={this.props.dragEvent} className='fifteen-min-block' onClick={this.alterBlock} style={this.state.isBlock || this.state.draggedOver ? {backgroundColor:'#a2c0f2', borderLeft:'3px solid #03A9F4'} : {}}>
         {helpers.styleStartEnd(id, isBlock, reservationBlocks, this.props.day)}
       </div>
     )
